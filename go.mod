@@ -1,3 +1,3 @@
-module github.com/ernado/ige
+module github.com/gotd/ige
 
 go 1.15
