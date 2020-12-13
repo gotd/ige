@@ -2,6 +2,8 @@ package ige
 
 import (
 	"crypto/cipher"
+
+	"github.com/gotd/xor"
 )
 
 // NewIGEDecrypter returns an IGE cipher.BlockMode which decrypts using IGE and
@@ -38,9 +40,9 @@ func (i *igeDecrypter) CryptBlocks(dst, src []byte) {
 	for o := 0; o < len(src); o += b {
 		t := src[o : o+b]
 
-		xor(dst[o:o+b], src[o:o+b], m)
+		xor.Bytes(dst[o:o+b], src[o:o+b], m)
 		i.block.Decrypt(dst[o:o+b], dst[o:o+b])
-		xor(dst[o:o+b], dst[o:o+b], c)
+		xor.Bytes(dst[o:o+b], dst[o:o+b], c)
 
 		m = dst[o : o+b]
 		c = t
