@@ -48,10 +48,12 @@ func (i *igeEncrypter) CryptBlocks(dst, src []byte) {
 }
 
 // EncryptBlocks is a simple shorthand for IGE encrypting.
+// Note: unlike NewIGEEncrypter, EncryptBlocks does NOT COPY iv.
+// So you must not modify passed iv.
 func EncryptBlocks(b cipher.Block, iv, dst, src []byte) {
 	if err := checkIV(b, iv); err != nil {
 		panic(err.Error())
 	}
-	dec := NewIGEEncrypter(b, iv)
-	dec.CryptBlocks(dst, src)
+	enc := igeEncrypter{block: b, iv: iv}
+	enc.CryptBlocks(dst, src)
 }

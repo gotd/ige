@@ -50,10 +50,12 @@ func (i *igeDecrypter) CryptBlocks(dst, src []byte) {
 }
 
 // DecryptBlocks is a simple shorthand for IGE decrypting.
+// Note: unlike NewIGEDecrypter, DecryptBlocks does NOT COPY iv.
+// So you must not modify passed iv.
 func DecryptBlocks(b cipher.Block, iv, dst, src []byte) {
 	if err := checkIV(b, iv); err != nil {
 		panic(err.Error())
 	}
-	dec := NewIGEDecrypter(b, iv)
+	dec := igeDecrypter{block: b, iv: iv}
 	dec.CryptBlocks(dst, src)
 }
