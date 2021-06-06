@@ -46,3 +46,12 @@ func (i *igeEncrypter) CryptBlocks(dst, src []byte) {
 		m = src[o : o+b]
 	}
 }
+
+// EncryptBlocks is a simple shorthand for IGE encrypting.
+func EncryptBlocks(b cipher.Block, iv, dst, src []byte) {
+	if err := checkIV(b, iv); err != nil {
+		panic(err.Error())
+	}
+	dec := NewIGEEncrypter(b, iv)
+	dec.CryptBlocks(dst, src)
+}

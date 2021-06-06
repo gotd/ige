@@ -48,3 +48,12 @@ func (i *igeDecrypter) CryptBlocks(dst, src []byte) {
 		c = t
 	}
 }
+
+// DecryptBlocks is a simple shorthand for IGE decrypting.
+func DecryptBlocks(b cipher.Block, iv, dst, src []byte) {
+	if err := checkIV(b, iv); err != nil {
+		panic(err.Error())
+	}
+	dec := NewIGEDecrypter(b, iv)
+	dec.CryptBlocks(dst, src)
+}
