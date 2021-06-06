@@ -53,6 +53,23 @@ func TestEncrypterCryptBlocks(t *testing.T) {
 	}
 }
 
+func TestEncryptBlocks(t *testing.T) {
+	for a, v := range TestVectors {
+		out := make([]byte, len(v.Ciphertext))
+
+		c, err := aes.NewCipher(v.Key)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		EncryptBlocks(c, v.IV, out, v.Plaintext)
+
+		if !bytes.Equal(out, v.Ciphertext) {
+			t.Fatalf("test vector %d has wrong ciphertext\n", a+1)
+		}
+	}
+}
+
 func TestEncryptCryptBlocksPanicSrc(t *testing.T) {
 	c, err := aes.NewCipher(make([]byte, 16))
 	if err != nil {
