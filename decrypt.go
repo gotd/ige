@@ -48,11 +48,11 @@ func DecryptBlocks(block cipher.Block, iv, dst, src []byte) {
 	m := iv[b:]
 
 	for o := 0; o < len(src); o += b {
-		t := src[o : o+b]
+		t := src[o : o+b : o+b]
 
-		xor.Bytes(dst[o:o+b], src[o:o+b], m)
-		block.Decrypt(dst[o:o+b], dst[o:o+b])
-		xor.Bytes(dst[o:o+b], dst[o:o+b], c)
+		xor.Bytes(dst[o:o+b:o+b], src[o:o+b:o+b], m)
+		block.Decrypt(dst[o:o+b:o+b], dst[o:o+b:o+b])
+		xor.Bytes(dst[o:o+b:o+b], dst[o:o+b:o+b], c)
 
 		m = dst[o : o+b]
 		c = t
