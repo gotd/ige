@@ -26,36 +26,35 @@ func (i *igeDecrypter) BlockSize() int {
 }
 
 func (i *igeDecrypter) CryptBlocks(dst, src []byte) {
-	if len(src)%i.block.BlockSize() != 0 {
+	DecryptBlocks(i.block, i.iv, dst, src)
+}
+
+// DecryptBlocks is a simple shorthand for IGE decrypting.
+// Note: unlike NewIGEDecrypter, DecryptBlocks does NOT COPY iv.
+// So you must not modify passed iv.
+func DecryptBlocks(block cipher.Block, iv, dst, src []byte) {
+	if err := checkIV(block, iv); err != nil {
+		panic(err.Error())
+	}
+	if len(src)%block.BlockSize() != 0 {
 		panic("src not full blocks")
 	}
 	if len(dst) < len(src) {
 		panic("len(dst) < len(src)")
 	}
 
-	b := i.block.BlockSize()
-	c := i.iv[:b]
-	m := i.iv[b:]
+	b := block.BlockSize()
+	c := iv[:b]
+	m := iv[b:]
 
 	for o := 0; o < len(src); o += b {
 		t := src[o : o+b]
 
 		xor.Bytes(dst[o:o+b], src[o:o+b], m)
-		i.block.Decrypt(dst[o:o+b], dst[o:o+b])
+		block.Decrypt(dst[o:o+b], dst[o:o+b])
 		xor.Bytes(dst[o:o+b], dst[o:o+b], c)
 
 		m = dst[o : o+b]
 		c = t
 	}
-}
-
-// DecryptBlocks is a simple shorthand for IGE decrypting.
-// Note: unlike NewIGEDecrypter, DecryptBlocks does NOT COPY iv.
-// So you must not modify passed iv.
-func DecryptBlocks(b cipher.Block, iv, dst, src []byte) {
-	if err := checkIV(b, iv); err != nil {
-		panic(err.Error())
-	}
-	dec := igeDecrypter{block: b, iv: iv}
-	dec.CryptBlocks(dst, src)
 }
