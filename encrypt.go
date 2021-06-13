@@ -26,34 +26,33 @@ func (i *igeEncrypter) BlockSize() int {
 }
 
 func (i *igeEncrypter) CryptBlocks(dst, src []byte) {
-	if len(src)%i.block.BlockSize() != 0 {
-		panic("src not full blocks")
-	}
-	if len(dst) < len(src) {
-		panic("len(dst) < len(src")
-	}
-
-	b := i.block.BlockSize()
-	c := i.iv[:b]
-	m := i.iv[b:]
-
-	for o := 0; o < len(src); o += b {
-		xor.Bytes(dst[o:o+b], src[o:o+b], c)
-		i.block.Encrypt(dst[o:o+b], dst[o:o+b])
-		xor.Bytes(dst[o:o+b], dst[o:o+b], m)
-
-		c = dst[o : o+b]
-		m = src[o : o+b]
-	}
+	EncryptBlocks(i.block, i.iv, dst, src)
 }
 
 // EncryptBlocks is a simple shorthand for IGE encrypting.
 // Note: unlike NewIGEEncrypter, EncryptBlocks does NOT COPY iv.
 // So you must not modify passed iv.
-func EncryptBlocks(b cipher.Block, iv, dst, src []byte) {
-	if err := checkIV(b, iv); err != nil {
+func EncryptBlocks(block cipher.Block, iv, dst, src []byte) {
+	if err := checkIV(block, iv); err != nil {
 		panic(err.Error())
 	}
-	enc := igeEncrypter{block: b, iv: iv}
-	enc.CryptBlocks(dst, src)
+	if len(src)%block.BlockSize() != 0 {
+		panic("src not full blocks")
+	}
+	if len(dst) < len(src) {
+		panic("len(dst) < len(src)")
+	}
+
+	b := block.BlockSize()
+	c := iv[:b]
+	m := iv[b:]
+
+	for o := 0; o < len(src); o += b {
+		xor.Bytes(dst[o:o+b:o+b], src[o:o+b:o+b], c)
+		block.Encrypt(dst[o:o+b:o+b], dst[o:o+b:o+b])
+		xor.Bytes(dst[o:o+b:o+b], dst[o:o+b:o+b], m)
+
+		c = dst[o : o+b : o+b]
+		m = src[o : o+b : o+b]
+	}
 }
