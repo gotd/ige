@@ -3,7 +3,7 @@ package ige
 import (
 	"crypto/cipher"
 
-	"github.com/gotd/xor"
+	"github.com/go-faster/xor"
 )
 
 // NewIGEEncrypter returns an IGE cipher.BlockMode which encrypts using IGE and
