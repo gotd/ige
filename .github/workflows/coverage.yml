@@ -46,11 +46,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Send coverage
-        uses: codecov/codecov-action@v5
-        with:
-          file: profile.out
-
   send:
     runs-on: ubuntu-latest
     needs:
@@ -67,4 +62,4 @@ jobs:
       - name: Send coverage
         uses: codecov/codecov-action@v5
         with:
-          file: profile.out
+          files: profile.out
