@@ -1,6 +1,6 @@
 linters-settings:
   govet:
-    check-shadowing: true
+    shadow: true
   golint:
     min-confidence: 0
   gocyclo:
@@ -35,8 +35,6 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    - deadcode
-    - depguard
     - dogsled
     - dupl
     - errcheck
@@ -46,7 +44,6 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - golint
     - gosec
     - gosimple
     - govet
@@ -54,15 +51,12 @@ linters:
     - lll
     - misspell
     - nakedret
-    - scopelint
     - staticcheck
-    - structcheck
     - stylecheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - whitespace
     - gochecknoglobals
     - gocognit
