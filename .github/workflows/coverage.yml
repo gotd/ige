@@ -1,39 +1,39 @@
 name: cover
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.17
+          go-version: stable
+          cache: false
 
       - name: Get Go environment
         id: go-env
         run: |
-          echo "::set-output name=cache::$(go env GOCACHE)"
-          echo "::set-output name=modcache::$(go env GOMODCACHE)"
+          echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
+          echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
+
       - name: Set up cache
-        uses: actions/cache@v4.2.0
+        uses: actions/cache@v4
         with:
           path: |
-            ${{ steps.go-env.outputs.cache }}
-            ${{ steps.go-env.outputs.modcache }}
-          key: test-${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+            ${{ env.cache }}
+            ${{ env.modcache }}
+          key: coverage-${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            test-${{ runner.os }}-go-
+            coverage-${{ runner.os }}-${{ runner.arch }}-go-
 
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Download dependencies
-        run: go mod download && go mod tidy
+        uses: actions/checkout@v4
 
       - name: Run tests with coverage
         run: make coverage
@@ -52,10 +52,10 @@ jobs:
       - run
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: coverage
 
@@ -63,3 +63,5 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: profile.out
+          fail_ci_if_error: true
+
